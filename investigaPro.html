@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>InvestigaPro - Diário de Ocorrências</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
+</head>
+<body>
+    <h1>Diário de Ocorrências em Linha do Tempo</h1>
+    
+    <form id="occurrence-form">
+        <label for="timestamp">Timestamp:</label>
+        <input type="datetime-local" id="timestamp" name="timestamp" required><br><br>
+        
+        <label for="description">Descrição:</label><br>
+        <textarea id="description" name="description" rows="4" cols="50" required></textarea><br><br>
+        
+        <input type="submit" value="Adicionar Ocorrência">
+    </form>
+    
+    <h2>Linha do Tempo</h2>
+    <ul id="timeline">
+        <!-- As ocorrências serão adicionadas aqui dinamicamente -->
+    </ul>
+    
+    <script>
+
+
+    // Array para armazenar as ocorrências
+    const occurrences = [];
+
+    document.getElementById("occurrence-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const timestamp = document.getElementById("timestamp").value;
+        const description = document.getElementById("description").value;
+        
+        // Adicionando a ocorrência ao array
+        occurrences.push({ timestamp, description });
+        
+        // Limpar o formulário
+        document.getElementById("timestamp").value = "";
+        document.getElementById("description").value = "";
+        
+        sendEmail(); // Enviar e-mail com a nova ocorrência
+        updateTimeline(); // Atualizar a linha do tempo
+    });
+
+    // Função para atualizar a linha do tempo
+    function updateTimeline() {
+        const timeline = document.getElementById("timeline");
+        timeline.innerHTML = ""; // Limpar a lista
+
+        // Adicionar as ocorrências na linha do tempo
+        occurrences.forEach(occurrence => {
+            const entry = document.createElement("li");
+            entry.textContent = `${occurrence.timestamp}: ${occurrence.description}`;
+            timeline.appendChild(entry);
+        });
+    }
+
+    // Função para enviar o e-mail
+    function sendEmail() {
+        const emailService = 'YOUR_EMAIL_SERVICE_ID';
+        const templateId = 'YOUR_TEMPLATE_ID';
+        const userId = 'YOUR_USER_ID';
+
+        // Inicializar o serviço de e-mail
+        emailjs.init(userId);
+
+        // Parâmetros do e-mail
+        const emailParams = {
+            to_email: 'brunelloleonardo7@gmail.com',
+            subject: 'Nova Ocorrência Registrada',
+            body: JSON.stringify(occurrences, null, 2)
+        };
+
+        // Enviar o e-mail
+        emailjs.send(emailService, templateId, emailParams)
+            .then(function(response) {
+                console.log('E-mail enviado com sucesso:', response);
+            }, function(error) {
+                console.error('Erro ao enviar o e-mail:', error);
+            });
+    }
+
+
+
+        document.getElementById("occurrence-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const timestamp = document.getElementById("timestamp").value;
+            const description = document.getElementById("description").value;
+            
+            const entry = document.createElement("li");
+            entry.textContent = `${timestamp}: ${description}`;
+            
+            document.getElementById("timeline").appendChild(entry);
+            
+            // Aqui você pode enviar os dados para um servidor ou armazená-los localmente
+        });
+    </script>
+</body>
+</html>
